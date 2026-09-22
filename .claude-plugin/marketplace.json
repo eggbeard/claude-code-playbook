@@ -1,0 +1,17 @@
+{
+  "name": "claude-code-playbook",
+  "description": "Patterns for driving Claude Code well: hooks, skills and agents with the reasoning behind them.",
+  "owner": {
+    "name": "Michael Hodgson",
+    "url": "https://github.com/eggbeard"
+  },
+  "plugins": [
+    {
+      "name": "comment-gate",
+      "source": "./plugins/comment-gate",
+      "description": "Blocks non-load-bearing comments at write time with a fresh-context judge, and backstops it with a review-time audit agent.",
+      "license": "MIT",
+      "keywords": ["comments", "hooks", "code-quality"]
+    }
+  ]
+}

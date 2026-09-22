@@ -1,0 +1,13 @@
+{
+  "name": "comment-gate",
+  "description": "Blocks non-load-bearing comments at write time with a fresh-context judge, and backstops it with a review-time audit agent.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": {
+    "name": "Michael Hodgson",
+    "url": "https://github.com/eggbeard"
+  },
+  "homepage": "https://eggbeard.github.io/claude-code-playbook/",
+  "repository": "https://github.com/eggbeard/claude-code-playbook",
+  "keywords": ["comments", "hooks", "code-quality"]
+}
