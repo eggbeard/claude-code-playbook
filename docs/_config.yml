@@ -1,0 +1,5 @@
+title: claude-code-playbook
+description: Patterns for driving Claude Code well, and why they are shaped the way they are.
+theme: jekyll-theme-minimal
+exclude:
+  - superpowers

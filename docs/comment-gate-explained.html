@@ -1,0 +1,547 @@
+<title>The Comment Gate</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light dark;
+    --paper: #f6f5f2;
+    --surface: #fbfbf9;
+    --ink: #1a1c1e;
+    --muted: #63666c;
+    --hairline: #e2e0db;
+    --accent: #2e3a59;
+    --accent-soft: #e7eaf1;
+    --pass: #2f7a5b;
+    --pass-soft: #e3efe8;
+    --deny: #b23a2e;
+    --deny-soft: #f4e4e1;
+    --shadow: 0 1px 2px rgba(26, 28, 30, 0.06), 0 8px 24px rgba(26, 28, 30, 0.05);
+    --mono: ui-monospace, "Cascadia Code", "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    --serif: "Charter", "Iowan Old Style", "Palatino Linotype", "Georgia", serif;
+    --measure: 66ch;
+    --step: clamp(1.5rem, 4vw, 2.75rem);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #141619;
+      --surface: #1c1f25;
+      --ink: #e7e8ea;
+      --muted: #9a9ea6;
+      --hairline: #2a2e36;
+      --accent: #8fa6d6;
+      --accent-soft: #232a3a;
+      --pass: #64bd90;
+      --pass-soft: #1a2a23;
+      --deny: #e28173;
+      --deny-soft: #2e211f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --paper: #f6f5f2;
+    --surface: #fbfbf9;
+    --ink: #1a1c1e;
+    --muted: #63666c;
+    --hairline: #e2e0db;
+    --accent: #2e3a59;
+    --accent-soft: #e7eaf1;
+    --pass: #2f7a5b;
+    --pass-soft: #e3efe8;
+    --deny: #b23a2e;
+    --deny-soft: #f4e4e1;
+    --shadow: 0 1px 2px rgba(26, 28, 30, 0.06), 0 8px 24px rgba(26, 28, 30, 0.05);
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #141619;
+    --surface: #1c1f25;
+    --ink: #e7e8ea;
+    --muted: #9a9ea6;
+    --hairline: #2a2e36;
+    --accent: #8fa6d6;
+    --accent-soft: #232a3a;
+    --pass: #64bd90;
+    --pass-soft: #1a2a23;
+    --deny: #e28173;
+    --deny-soft: #2e211f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: clamp(2rem, 6vw, 5rem) clamp(1.15rem, 5vw, 2.5rem) 5rem;
+  }
+  .prose { max-width: var(--measure); }
+  p { margin: 0 0 1rem; }
+  a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 1.9rem;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--mono);
+    font-weight: 650;
+    font-size: clamp(2rem, 6.2vw, 3.35rem);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin: 0 0 1.25rem;
+  }
+  h1 .cut { color: var(--deny); }
+  h1 .keep { color: var(--pass); }
+  .lede {
+    font-size: clamp(1.15rem, 2.6vw, 1.4rem);
+    line-height: 1.5;
+    color: var(--ink);
+    max-width: 40ch;
+    margin: 0 0 2rem;
+  }
+
+  h2 {
+    font-family: var(--mono);
+    font-weight: 640;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0 0 0.5rem;
+  }
+  h2 .n {
+    color: var(--accent);
+    font-size: 0.95rem;
+    vertical-align: 0.35em;
+    margin-right: 0.55rem;
+    font-weight: 600;
+  }
+  section { margin-top: calc(var(--step) * 1.6); }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 1.5rem;
+  }
+
+  .rule { height: 1px; background: var(--hairline); border: 0; margin: 0; }
+
+  /* Verdict stamp motif — the subject's own vernacular (a gate that rules). */
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 650;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+  }
+  .stamp.keep { color: var(--pass); background: var(--pass-soft); }
+  .stamp.cut { color: var(--deny); background: var(--deny-soft); }
+  .stamp.big {
+    font-size: 0.82rem;
+    padding: 0.4rem 0.8rem;
+    transform: rotate(-4deg);
+  }
+
+  .hero-verdict {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem 1.4rem;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .hero-verdict .arm { display: inline-flex; align-items: center; gap: 0.55rem; }
+
+  /* Flow strip — a genuine sequence: write -> detect -> judge -> verdict. */
+  .flow {
+    list-style: none;
+    counter-reset: step;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+  .flow li {
+    counter-increment: step;
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 1.1rem 1.25rem 1.1rem 3.6rem;
+    box-shadow: var(--shadow);
+  }
+  .flow li::before {
+    content: counter(step);
+    position: absolute;
+    left: 1.15rem;
+    top: 1rem;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 650;
+    color: var(--accent);
+    background: var(--accent-soft);
+    width: 1.6rem;
+    height: 1.6rem;
+    display: grid;
+    place-items: center;
+    border-radius: 5px;
+  }
+  .flow h3 {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 640;
+    margin: 0 0 0.2rem;
+    letter-spacing: -0.005em;
+  }
+  .flow p { margin: 0; font-size: 0.98rem; color: var(--muted); }
+  .flow .tag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-left: 0.5rem;
+  }
+
+  /* The centerpiece: failure mechanism -> design answer, paired. */
+  .map { display: grid; gap: 0.7rem; margin-top: 1.75rem; }
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .pair > div { padding: 1.1rem 1.25rem; }
+  .pair .fail {
+    border-right: 1px solid var(--hairline);
+  }
+  .pair .fail .label,
+  .pair .fix .label {
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    display: block;
+    margin: 0 0 0.5rem;
+  }
+  .pair .fail .label { color: var(--deny); }
+  .pair .fix .label { color: var(--pass); }
+  .pair .fix { background: linear-gradient(0deg, var(--accent-soft), transparent 140%); }
+  .pair p { margin: 0; font-size: 0.96rem; line-height: 1.48; }
+  .pair .fail p { color: var(--muted); }
+  @media (max-width: 34rem) {
+    .pair { grid-template-columns: 1fr; }
+    .pair .fail { border-right: 0; border-bottom: 1px solid var(--hairline); }
+  }
+
+  /* Keep vs cut, with code. */
+  .examples { display: grid; gap: 1rem; margin-top: 1.75rem; }
+  @media (min-width: 44rem) { .examples { grid-template-columns: 1fr 1fr; } }
+  figure {
+    margin: 0;
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    background: var(--surface);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+  figcaption .what {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  pre {
+    margin: 0;
+    padding: 1.1rem;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    tab-size: 2;
+  }
+  pre .cmt-cut { color: var(--deny); }
+  pre .cmt-keep { color: var(--pass); }
+  pre .code { color: var(--ink); }
+  figure .note {
+    padding: 0 1.1rem 1.05rem;
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  /* Operational reference. */
+  dl.ops {
+    margin: 1.5rem 0 0;
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--hairline);
+  }
+  dl.ops > div {
+    display: grid;
+    grid-template-columns: minmax(8.5rem, 12rem) 1fr;
+    gap: 0.5rem 1.5rem;
+    padding: 0.95rem 0.25rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+  dl.ops dt {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 620;
+    color: var(--accent);
+    letter-spacing: -0.005em;
+  }
+  dl.ops dd { margin: 0; font-size: 0.96rem; color: var(--ink); }
+  dl.ops dd code, .prose code, .callout code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    background: var(--accent-soft);
+    padding: 0.08em 0.35em;
+    border-radius: 4px;
+  }
+  @media (max-width: 34rem) {
+    dl.ops > div { grid-template-columns: 1fr; gap: 0.15rem; }
+  }
+
+  .callout {
+    margin-top: 1.5rem;
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    background: var(--surface);
+    padding: 1.15rem 1.3rem;
+    font-size: 0.98rem;
+  }
+  .callout strong { font-family: var(--mono); font-size: 0.9rem; letter-spacing: -0.005em; }
+
+  ol.reuse { margin: 1.5rem 0 0; padding: 0; list-style: none; counter-reset: r; display: grid; gap: 0.7rem; }
+  ol.reuse li {
+    counter-increment: r;
+    position: relative;
+    padding-left: 2.4rem;
+    font-size: 0.99rem;
+  }
+  ol.reuse li::before {
+    content: counter(r, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.05em;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 650;
+    color: var(--accent);
+  }
+
+  footer {
+    margin-top: calc(var(--step) * 2);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hairline);
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    justify-content: space-between;
+  }
+
+  .hero { animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .hero { animation: none; }
+    * { scroll-behavior: auto; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">The Comment Gate · claude-code-playbook</p>
+    <h1>A comment <span class="keep">earns its place</span>, or it <span class="cut">doesn't land</span>.</h1>
+    <p class="lede">A write-time gate that blocks non-load-bearing comments in production code — judged fresh, by a party with no stake in having written them.</p>
+    <div class="hero-verdict">
+      <span class="arm"><span class="stamp keep">Kept</span> a why the next editor needs</span>
+      <span class="arm"><span class="stamp cut">Cut</span> a line that restates the code</span>
+    </div>
+  </header>
+
+  <section class="prose">
+    <p class="kicker">The problem</p>
+    <h2>Clarity was never the deficit.</h2>
+    <p>The rule is simple: a comment earns its place only when it carries a <em>why</em>, a constraint, a footgun, or an anchor the code cannot — never when it restates the code, a doc, or the author's own derivation. That rule lived in the project guide, in a dedicated skill, and in per-session memory, and an advisory hook flagged every offending line as it was written.</p>
+    <p>It still failed. One branch shipped roughly fifty comment lines that failed the test — <strong>with the advisory hook flagging every one</strong> — and clearing them took a dedicated sweep and an extra review round. A clearer restatement of the rule would not have changed that. The fix had to be structural.</p>
+  </section>
+
+  <section>
+    <p class="kicker">The mechanism</p>
+    <h2>Every failure mode, answered by a design choice</h2>
+    <p class="prose" style="color: var(--muted);">A stated rule decays for reasons wording can't fix, and an advisory flag lands wrong even when it fires every time. Each row pairs the failure on the left with the structural answer the gate makes on the right.</p>
+    <div class="map">
+      <div class="pair">
+        <div class="fail"><span class="label">Fails · salience decay</span><p>The rule is a few hundred tokens at the top of a context that grows into the hundreds of thousands. It isn't deleted — it gets quieter.</p></div>
+        <div class="fix"><span class="label">Answered · fire at the write</span><p>The gate runs at the moment of the write (PreToolUse). There is no distance for the rule to decay over.</p></div>
+      </div>
+      <div class="pair">
+        <div class="fail"><span class="label">Fails · author-as-judge</span><p>Re-evaluating a comment you composed seconds ago, with the justification still hot, gives a precomputed verdict — self-consistency, not a fresh test.</p></div>
+        <div class="fix"><span class="label">Answered · a fresh judge</span><p>A separate context with no authorship stake, born per judgment. It has nothing to defend.</p></div>
+      </div>
+      <div class="pair">
+        <div class="fail"><span class="label">Fails · advisory on success</span><p>The write already succeeded when the flag arrived, so acting meant reopening finished work. An advisory on a success reads as FYI.</p></div>
+        <div class="fix"><span class="label">Answered · a blocking deny</span><p>The write fails. Rewriting the comment is the only way forward — compliance is the path, not a suggestion.</p></div>
+      </div>
+      <div class="pair">
+        <div class="fail"><span class="label">Fails · habituation</span><p>A flag on every added line, good ones included, builds a false-positive base rate. Each dismissal makes the next cheaper.</p></div>
+        <div class="fix"><span class="label">Answered · nothing to dismiss</span><p>Nothing is asked of the author, and the judge keeps no history — so there is no muscle to build for waving it away.</p></div>
+      </div>
+      <div class="pair">
+        <div class="fail"><span class="label">Fails · the rule goes unread</span><p>Pointing at the skill isn't reading it. The delete-test was never in context at the decision point.</p></div>
+        <div class="fix"><span class="label">Answered · the rule is the brief</span><p>The skill <em>is</em> the judge's rulebook, in its context at every decision — read by the party it was written for.</p></div>
+      </div>
+      <div class="pair">
+        <div class="fail"><span class="label">Fails · the exception clause</span><p>"Load-bearing only" needs a classifier, and the classifier is the same context sure that what it just wrote is the exception.</p></div>
+        <div class="fix"><span class="label">Answered · no derivation in memory</span><p>The judge applies the mis-edit test cold, with none of the reasoning that made the comment feel valuable.</p></div>
+      </div>
+      <div class="pair">
+        <div class="fail"><span class="label">Fails · cost on every write</span><p>Judging every edit would tax comment-free writes with a model call they don't need.</p></div>
+        <div class="fix"><span class="label">Answered · a cheap first gate</span><p>A regex detector escalates to the judge only when comment lines are actually added. No comment, no cost.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">The flow</p>
+    <h2>From keystroke to verdict</h2>
+    <ol class="flow">
+      <li>
+        <h3>A write arrives <span class="tag">PreToolUse</span></h3>
+        <p>Any Write or Edit to production TypeScript (<code>apps/**/src</code>, <code>libs/**/src</code>; never specs or test utilities) enters the gate before it touches disk.</p>
+      </li>
+      <li>
+        <h3>The detector scans the proposed content <span class="tag">regex · free</span></h3>
+        <p>It looks only for <em>added</em> comment lines, ignoring <code>//</code> inside strings. None added → the write proceeds instantly, at zero model cost.</p>
+      </li>
+      <li>
+        <h3>The judge rules on what was added <span class="tag">fresh · no write/edit</span></h3>
+        <p>A headless model call, given the skill as its rulebook and the nearest domain docs, applies the delete-test to each added line and returns a per-line verdict. Write and Edit are disabled, so it cannot loop back through the gate.</p>
+      </li>
+      <li>
+        <h3>Allow, or deny with reasons <span class="tag">verdict</span></h3>
+        <p>Every line load-bearing → allow. Otherwise the write is denied with the judge's per-line reasons, and the author rewrites. If the judge is unreachable after a retry, the write fails <em>open</em> — a failed judge is not a bad comment.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="kicker">The test itself</p>
+    <h2>Would the next editor mis-edit this without it?</h2>
+    <p class="prose">Not <em>"is this true and not already in the code?"</em> — every domain fact passes that, so it filters nothing. The reader is modelled with the repo, grep, and the domain docs at hand; "need" is scoped to editing <em>this</em> line safely. Overlap with a doc is not grounds to cut: a doc warns "this kind of thing exists across the domain," a comment warns "this specific thing, here," and docs get trimmed too.</p>
+    <div class="examples">
+      <figure>
+        <figcaption><span class="what">restates the code</span><span class="stamp cut">Cut</span></figcaption>
+        <pre><span class="cmt-cut">// increment the counter</span>
+<span class="code">counter++;</span></pre>
+        <p class="note">The line says it. A reader at this code would never mis-edit for want of the comment.</p>
+      </figure>
+      <figure>
+        <figcaption><span class="what">a footgun the code can't warn of</span><span class="stamp keep">Kept</span></figcaption>
+        <pre><span class="cmt-keep">// POST re-derives the shelf key from the title and discards
+// a posted one — the key can only be set by PUT.</span>
+<span class="code">private setShelfKey(id, title) {</span></pre>
+        <p class="note">Server behaviour the code cannot show. Without it, the next editor collapses two calls into one and breaks the link.</p>
+      </figure>
+      <figure>
+        <figcaption><span class="what">a measurement that goes stale</span><span class="stamp cut">Cut</span></figcaption>
+        <pre><span class="cmt-cut">// ~33ms/row — 0.4s for all 959 rows,
+// measured 2026-07-08</span>
+<span class="code">query.set('named_query', 'landing');</span></pre>
+        <p class="note">Stale the day after, and unactionable. The decision lives in the code; the number belongs in the commit or the doc.</p>
+      </figure>
+      <figure>
+        <figcaption><span class="what">a why with an anchor</span><span class="stamp keep">Kept</span></figcaption>
+        <pre><span class="cmt-keep">// named_query=landing is load-bearing — without
+// it the default serializer is unusably slow.</span>
+<span class="code">query.set('named_query', 'landing');</span></pre>
+        <p class="note">Same subject, different job: why the parameter must stay, phrased for the editor who might drop it.</p>
+      </figure>
+    </div>
+  </section>
+
+  <section class="prose">
+    <p class="kicker">Operating it</p>
+    <h2>The guarantees, and the seams</h2>
+    <dl class="ops">
+      <div><dt>Zero-cost path</dt><dd>A write that adds no comment never reaches the judge — no latency, no model call.</dd></div>
+      <div><dt>No recursion</dt><dd>The judge runs with Write and Edit disabled, so it cannot re-enter the gate; a guard variable makes it doubly certain.</dd></div>
+      <div><dt>Retry, then open</dt><dd>A timeout or transient error retries once; still unreachable, the write is allowed and a breadcrumb is logged. A real verdict still blocks.</dd></div>
+      <div><dt>Review backstop</dt><dd>Because it can fail open, a review-time comment audit catches anything that slips through — enforcement is defense-in-depth, not one chokepoint.</dd></div>
+      <div><dt>Escape hatch</dt><dd><code>CLAUDE_COMMENT_GATE_OFF=1</code> disables the gate entirely, for emergencies.</dd></div>
+    </dl>
+    <div class="callout">
+      <p><strong>A lesson worth keeping.</strong> The first judge, handed the domain docs and told to cut what restated them, promptly cut load-bearing footguns that merely overlapped a doc topic — quietly re-deriving a rule we had explicitly rejected. The calibration fixtures now pin both ends: measurements and consumer-lists deny; code-site footguns and whys pass. A judge is a component you test, not a rule you trust.</p>
+    </div>
+  </section>
+
+  <section class="prose">
+    <p class="kicker">Reuse the pattern</p>
+    <h2>Porting it to your own rule</h2>
+    <p>The shape generalizes to any judgment rule that a stated instruction keeps losing — one that needs a classifier the author is the worst-placed to run.</p>
+    <ol class="reuse">
+      <li>Put the rule in one place, written for the party that must apply it — not scattered across guides and memory.</li>
+      <li>Detect cheaply and deterministically, so the common case pays nothing and only real candidates escalate.</li>
+      <li>Judge in a fresh context that never wrote the thing under review, with the rule in hand at the decision point.</li>
+      <li>Block on a real verdict; fail open on an unavailable judge — a broken tool is not a violation.</li>
+      <li>Back the write-time gate with a review-time audit, and pin the judge's calibration with fixtures from real cases.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <span>The The Comment Gate · claude-code-playbook</span>
+    <span>Block the comment, not the failure.</span>
+  </footer>
+</div>
