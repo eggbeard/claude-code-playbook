@@ -21,4 +21,4 @@ A brief JSDoc on an **exported** symbol is load-bearing when it helps a consumer
 
 ## Running it by hand
 
-`/comment path/to/file.ts` runs a cleanup pass: every comment gets the delete-test, failures are cut, code is untouched, and you get a one-line report. The full rule, keep and cut lists, worked examples, and the rationalization traps are in the skill file itself: [`plugins/comment-gate/skills/comment/SKILL.md`](https://github.com/eggbeard/claude-code-playbook/blob/main/plugins/comment-gate/skills/comment/SKILL.md).
+`/comment-gate:comment path/to/file.ts` (the plugin prefixes its skill names) runs a cleanup pass: every comment gets the delete-test, failures are cut, code is untouched, and you get a one-line report. The full rule, keep and cut lists, worked examples, and the rationalization traps are in the skill file itself: [`plugins/comment-gate/skills/comment/SKILL.md`](https://github.com/eggbeard/claude-code-playbook/blob/main/plugins/comment-gate/skills/comment/SKILL.md).

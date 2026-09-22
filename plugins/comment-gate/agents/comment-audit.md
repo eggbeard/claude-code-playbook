@@ -4,7 +4,7 @@ description: Review-time backstop for the write-time comment gate — re-checks 
 tools: [Read, Grep, Glob, Bash]
 model: claude-opus-5
 skills:
-  - comment
+  - comment-gate:comment
 ---
 
 # Agent — comment audit

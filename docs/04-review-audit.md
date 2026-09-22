@@ -12,7 +12,7 @@ Its model is pinned by id in the agent's frontmatter, not chosen at dispatch. A 
 
 ## The gate on the backstop
 
-`review-comments` is the skill that decides whether the agent runs. It diffs the branch against the base branch, looks at added lines in non-spec TypeScript, and dispatches the agent if any is a comment. It never asks. Two rules make it worth having:
+`review-comments` (invoked as `/comment-gate:review-comments`) is the skill that decides whether the agent runs. It diffs the branch against the base branch, looks at added lines in non-spec TypeScript, and dispatches the agent if any is a comment. It never asks. Two rules make it worth having:
 
 - An author's own `/comment` pass does not substitute. Same party, same blind spot.
 - A gate that matches runs; a gate that does not match does not run. No "want me to?".

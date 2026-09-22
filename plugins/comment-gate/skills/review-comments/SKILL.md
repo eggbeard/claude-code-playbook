@@ -20,12 +20,12 @@ The write-time `comment-gate` hook fails open when its judge is unavailable, so 
 
    Call this `CHANGED_TS`. If empty, report "no production TS changed" and stop.
 3. **Did the diff add a comment line?** Over `git diff origin/<base>...HEAD -- <CHANGED_TS>`, look at `+` lines only. A comment line is one whose first non-whitespace characters are `//`, `/*`, or `*` inside an open block, or that carries a `//` outside a string literal. If none, report "no comment lines added" and stop.
-4. **Dispatch the audit.** Call `Agent(subagent_type: "comment-audit")` with `CHANGED_TS` and `FULL_DIFF` (the full output of step 3's diff). If the agent list shows the agent under this plugin's prefix, use that exact name. **Pass no `model` override**: the agent's frontmatter pins its model, and a call-time override replaces the pin.
+4. **Dispatch the audit.** Call `Agent(subagent_type: "comment-gate:comment-audit")` with `CHANGED_TS` and `FULL_DIFF` (the full output of step 3's diff). **Pass no `model` override**: the agent's frontmatter pins its model, and a call-time override replaces the pin.
 5. **Report.** Relay the agent's findings verbatim as a list; the healthy result is "all load-bearing, no findings".
 
 ## Rules
 
-- An author-time `/comment <file>` pass does not substitute for the audit. That pass is run by the party that wrote the comments; this one is not.
+- An author-time `/comment-gate:comment <file>` pass does not substitute for the audit. That pass is run by the party that wrote the comments; this one is not.
 - The audit is advisory (Notes). It does not block; the write-time gate is the enforcement.
 
 ## Gating table
